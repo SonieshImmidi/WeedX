@@ -1,0 +1,113 @@
+{% extends 'layout.html' %} {% block body %}
+
+
+<style>
+  html body {
+    background-color: rgb(240, 237, 237);
+  }
+</style>
+
+<!-- Google Translate Styles -->
+<style>
+  #google_translate_element {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  /* Clean up Google Translate widget appearance */
+  .skiptranslate iframe {
+      display: none !important;
+  }
+  
+  .goog-logo-link {
+      display: none !important;
+  }
+  
+  .goog-te-gadget {
+      color: transparent !important;
+  }
+  
+  .goog-te-banner-frame.skiptranslate {
+      display: none !important;
+  }
+  
+  body {
+      top: 0px !important;
+  }
+
+  @media screen and (max-width: 768px) {
+      #google_translate_element {
+          top: 10px;
+          right: 10px;
+      }
+  }
+</style>
+
+<!-- Google Translate Element -->
+<div id="google_translate_element"></div>
+
+<!-- Google Translate Scripts -->
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'hi,mr,gu,bn,ta,te,kn,ml,pa,ur,en', // Major Indian languages + English
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+      }, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<br /><br />
+  <h2 style="text-align: center; margin: 0px; color: black">
+    <b>Identify Plant Diseases: Know What's Affecting Your Crops</b>
+  </h2>
+  <br />
+  <br>
+
+<div style="
+    width: 350px;
+    height: 50rem;
+    margin: 0px auto;
+    color: black;
+    border-radius: 25px;
+    padding: 10px 10px;
+    font-weight: bold;
+  ">
+
+  
+
+
+  <form class="form-signin" method=post enctype=multipart/form-data>
+
+    <h2 class="h4 mb-3 font-weight-normal"><b>Please Upload The Image</b></h2>
+    <input type="file" name="file" class="form-control-file" id="inputfile" onchange="preview_image(event)" style="font-weight: bold;">
+    <br>
+    <br>
+    <img id="output-image" class="rounded mx-auto d-block" />
+    <button class="btn btn-lg btn-primary btn-block" type="submit" style="font-weight: bold;">Predict</button>
+
+
+  </form>
+</div>
+
+<script type="text/javascript">
+  function preview_image(event) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var output = document.getElementById('output-image')
+      output.src = reader.result;
+    }
+    reader.readAsDataURL(event.target.files[0]);
+  }
+</script>
+
+</div>
+{% endblock %}

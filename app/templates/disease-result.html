@@ -1,0 +1,73 @@
+
+{% extends 'layout.html' %} {% block body %}
+
+
+<!-- Google Translate Styles -->
+<style>
+  #google_translate_element {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  /* Clean up Google Translate widget appearance */
+  .skiptranslate iframe {
+      display: none !important;
+  }
+  
+  .goog-logo-link {
+      display: none !important;
+  }
+  
+  .goog-te-gadget {
+      color: transparent !important;
+  }
+  
+  .goog-te-banner-frame.skiptranslate {
+      display: none !important;
+  }
+  
+  body {
+      top: 0px !important;
+  }
+
+  @media screen and (max-width: 768px) {
+      #google_translate_element {
+          top: 10px;
+          right: 10px;
+      }
+  }
+</style>
+
+<!-- Google Translate Element -->
+<div id="google_translate_element"></div>
+
+<!-- Google Translate Scripts -->
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'hi,mr,gu,bn,ta,te,kn,ml,pa,ur,en', // Major Indian languages + English
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+      }, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+<div class="container py-2 mx-auto my-50 h-10 " style="margin: 9rem;">
+  <div class="row">
+      <div class="col-sm py-2 py-md-3">
+          <div class="card card-body" style="justify-content: center; background-color:blanchedalmond">
+            <p class="text-center" style="color: black; font-size: 22px;">{{ prediction }}</p>
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}

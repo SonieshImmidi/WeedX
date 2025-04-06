@@ -1,0 +1,72 @@
+<form class="md-form">
+  <!-- Google Translate Styles -->
+<style>
+  #google_translate_element {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  /* Clean up Google Translate widget appearance */
+  .skiptranslate iframe {
+      display: none !important;
+  }
+  
+  .goog-logo-link {
+      display: none !important;
+  }
+  
+  .goog-te-gadget {
+      color: transparent !important;
+  }
+  
+  .goog-te-banner-frame.skiptranslate {
+      display: none !important;
+  }
+  
+  body {
+      top: 0px !important;
+  }
+
+  @media screen and (max-width: 768px) {
+      #google_translate_element {
+          top: 10px;
+          right: 10px;
+      }
+  }
+</style>
+
+<!-- Google Translate Element -->
+<div id="google_translate_element"></div>
+
+<!-- Google Translate Scripts -->
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'hi,mr,gu,bn,ta,te,kn,ml,pa,ur,en', // Major Indian languages + English
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+      }, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <div class="file-field">
+      <div class="z-depth-1-half mb-4">
+        <img src="https://mdbootstrap.com/img/Photos/Others/placeholder.jpg" class="img-fluid"
+          alt="example placeholder">
+      </div>
+      <div class="d-flex justify-content-center">
+        <div class="btn btn-mdb-color btn-rounded float-left">
+          <span>Choose file</span>
+          <input type="file">
+        </div>
+      </div>
+    </div>
+  </form>
