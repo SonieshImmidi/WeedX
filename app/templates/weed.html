@@ -1,0 +1,345 @@
+{% extends 'layout.html' %} {% block body %}
+
+<style>
+  html body {
+    background-color: rgb(240, 237, 237);
+  }
+
+  /* Markdown content styling */
+  .markdown-content {
+    line-height: 1.6;
+  }
+  
+  .markdown-content h1, 
+  .markdown-content h2, 
+  .markdown-content h3, 
+  .markdown-content h4, 
+  .markdown-content h5, 
+  .markdown-content h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+  }
+  
+  .markdown-content p {
+    margin-bottom: 1em;
+  }
+  
+  .markdown-content ul, 
+  .markdown-content ol {
+    margin-bottom: 1em;
+    padding-left: 2em;
+  }
+  
+  .markdown-content li {
+    margin-bottom: 0.5em;
+  }
+  
+  .markdown-content code {
+    background-color: #f5f5f5;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: monospace;
+  }
+  
+  .markdown-content pre {
+    background-color: #f5f5f5;
+    padding: 1em;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin-bottom: 1em;
+  }
+  
+  .markdown-content blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1em;
+    margin-left: 0;
+    color: #666;
+  }
+  
+  .markdown-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1em;
+  }
+  
+  .markdown-content th, 
+  .markdown-content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .markdown-content th {
+    background-color: #f5f5f5;
+  }
+
+  /* Chatbot styles */
+  .chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: all 0.3s;
+  }
+  
+  .chat-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+  
+  .chat-icon {
+    font-size: 24px;
+  }
+  
+  .chat-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    overflow: hidden;
+  }
+  
+  .chat-header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+  }
+  
+  .chat-input-container {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    display: flex;
+  }
+  
+  .chat-input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    margin-right: 10px;
+  }
+  
+  .chat-send {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+  }
+  
+  .message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  
+  .user-message {
+    background-color: #e1ffc7;
+    align-self: flex-end;
+    margin-left: auto;
+  }
+  
+  .bot-message {
+    background-color: #f0f0f0;
+    align-self: flex-start;
+  }
+</style>
+
+<!-- Google Translate Styles -->
+<style>
+  #google_translate_element {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  /* Clean up Google Translate widget appearance */
+  .skiptranslate iframe {
+      display: none !important;
+  }
+  
+  .goog-logo-link {
+      display: none !important;
+  }
+  
+  .goog-te-gadget {
+      color: transparent !important;
+  }
+  
+  .goog-te-banner-frame.skiptranslate {
+      display: none !important;
+  }
+  
+  body {
+      top: 0px !important;
+  }
+
+  @media screen and (max-width: 768px) {
+      #google_translate_element {
+          top: 10px;
+          right: 10px;
+      }
+  }
+</style>
+
+<!-- Google Translate Element -->
+<div id="google_translate_element"></div>
+
+<!-- Google Translate Scripts -->
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'hi,mr,gu,bn,ta,te,kn,ml,pa,ur,en', // Major Indian languages + English
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+      }, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<br /><br />
+  <h2 style="text-align: center; margin: 0px; color: black">
+    <b>Identify Weeds: Protect Your Crops from Unwanted Plants</b>
+  </h2>
+  <br />
+  <br>
+
+<div style="
+    width: 350px;
+    height: 50rem;
+    margin: 0px auto;
+    color: black;
+    border-radius: 25px;
+    padding: 10px 10px;
+    font-weight: bold;
+  ">
+
+  <form class="form-signin" method=post enctype=multipart/form-data action="{{ url_for('weed_prediction') }}">
+    <h2 class="h4 mb-3 font-weight-normal"><b>Upload an Image of the Weed</b></h2>
+    <input type="file" name="file" class="form-control-file" id="inputfile" onchange="preview_image(event)" style="font-weight: bold;">
+    <br>
+    <br>
+    <img id="output-image" class="rounded mx-auto d-block" />
+    <button class="btn btn-lg btn-primary btn-block" type="submit" style="font-weight: bold;">Identify Weed</button>
+  </form>
+</div>
+
+<!-- Chatbot Elements -->
+<div class="chat-button" onclick="toggleChat()">
+  <i class="fa fa-comment chat-icon"></i>
+</div>
+
+<div class="chat-container" id="chatContainer">
+  <div class="chat-header">
+    <h5 style="margin: 0;">Weed Assistant</h5>
+    <span onclick="toggleChat()" style="cursor: pointer;">×</span>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="message bot-message">Hello! I'm your weed management assistant. How can I help you today?</div>
+  </div>
+  <div class="chat-input-container">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="if(event.keyCode == 13) sendMessage()">
+    <button class="chat-send" onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script type="text/javascript">
+  // Image preview function
+  function preview_image(event) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var output = document.getElementById('output-image')
+      output.src = reader.result;
+    }
+    reader.readAsDataURL(event.target.files[0]);
+  }
+
+  // Chatbot toggle function
+  function toggleChat() {
+    var chatContainer = document.getElementById('chatContainer');
+    if (chatContainer.style.display === 'flex') {
+      chatContainer.style.display = 'none';
+    } else {
+      chatContainer.style.display = 'flex';
+      document.getElementById('chatInput').focus();
+    }
+  }
+
+  // Send message function
+  function sendMessage() {
+    var input = document.getElementById('chatInput');
+    var message = input.value.trim();
+    
+    if (message === '') return;
+    
+    // Add user message
+    addMessage(message, 'user');
+    input.value = '';
+    
+    // Send to backend
+    fetch('/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: message }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Add bot response
+      addMessage(data.response, 'bot');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+    });
+  }
+
+  function addMessage(message, sender) {
+    var messagesContainer = document.getElementById('chatMessages');
+    var messageElement = document.createElement('div');
+    messageElement.classList.add('message');
+    messageElement.classList.add(sender + '-message');
+    messageElement.textContent = message;
+    messagesContainer.appendChild(messageElement);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+</script>
+
+{% endblock %} 

@@ -1,0 +1,490 @@
+{% extends 'layout.html' %} {% block body %}
+
+<!-- Google Translate Styles -->
+<style>
+  #google_translate_element {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  /* Clean up Google Translate widget appearance */
+  .skiptranslate iframe {
+      display: none !important;
+  }
+  
+  .goog-logo-link {
+      display: none !important;
+  }
+  
+  .goog-te-gadget {
+      color: transparent !important;
+  }
+  
+  .goog-te-banner-frame.skiptranslate {
+      display: none !important;
+  }
+  
+  body {
+      top: 0px !important;
+  }
+
+  @media screen and (max-width: 768px) {
+      #google_translate_element {
+          top: 10px;
+          right: 10px;
+      }
+  }
+
+  /* Chatbot styles */
+  .chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: all 0.3s;
+  }
+  
+  .chat-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+  
+  .chat-icon {
+    font-size: 24px;
+  }
+  
+  .chat-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    overflow: hidden;
+  }
+  
+  .chat-header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+  }
+  
+  .chat-input-container {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    display: flex;
+  }
+  
+  .chat-input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    margin-right: 10px;
+  }
+  
+  .chat-send {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+  }
+  
+  .message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  
+  .user-message {
+    background-color: #e1ffc7;
+    align-self: flex-end;
+    margin-left: auto;
+  }
+  
+  .bot-message {
+    background-color: #f0f0f0;
+    align-self: flex-start;
+  }
+
+  .weed-info {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+  }
+
+  .weed-info h4 {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+
+  .weed-image {
+    max-width: 300px;
+    margin: 0 auto 20px;
+    display: block;
+    border-radius: 8px;
+  }
+  
+  .pesticide-info {
+    background-color: #f0f8ff;
+    border: 1px solid #b0e0e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+  }
+  
+  .pesticide-info h4 {
+    border-bottom: 1px solid #b0e0e6;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    color: #4682b4;
+  }
+  
+  .pesticide-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .pesticide-price {
+    background-color: #e6f7ff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #0066cc;
+  }
+  
+  .buy-button {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .buy-button:hover {
+    background-color: #45a049;
+  }
+</style>
+
+<!-- Google Translate Element -->
+<div id="google_translate_element"></div>
+
+<!-- Google Translate Scripts -->
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'hi,mr,gu,bn,ta,te,kn,ml,pa,ur,en', // Major Indian languages + English
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
+      }, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<div class="container py-2 mx-auto my-50 h-10" style="margin: 5rem;">
+  <div class="row">
+    <div class="col-sm py-2 py-md-3">
+      <div class="card card-body" style="justify-content: center; background-color:blanchedalmond">
+        <h3 class="text-center mb-4" style="color: black; font-size: 24px;">Weed Identification Results</h3>
+        
+        {% if weed_image %}
+        <img src="{{ weed_image }}" class="weed-image" alt="Uploaded weed image">
+        {% endif %}
+        
+        <div class="weed-info">
+          <h4 style="color: black; font-size: 20px;">{{ weed_name }}</h4>
+          <p style="color: black; font-size: 16px;"><strong>Scientific Name:</strong> {{ scientific_name }}</p>
+          <p style="color: black; font-size: 16px;"><strong>Confidence:</strong> {{ confidence }}%</p>
+          <p style="color: black; font-size: 16px;">{{ description }}</p>
+        </div>
+        
+        <div class="weed-info">
+          <h4 style="color: black; font-size: 20px;">Management Recommendations</h4>
+          <div style="color: black; font-size: 16px;" class="markdown-content">
+            {{ management | markdown | safe }}
+          </div>
+        </div>
+        
+        {% if pesticide_name and pesticide_info %}
+        <div class="pesticide-info">
+          <h4 style="color: #4682b4; font-size: 20px;">Recommended Pesticides</h4>
+          <p style="color: black; font-size: 16px;"><strong>Recommended Active Ingredient:</strong> {{ pesticide_name }}</p>
+          
+          {% if recommended_dosage %}
+          <p style="color: black; font-size: 16px;"><strong>Recommended Dosage:</strong> {{ recommended_dosage }} ml per acre</p>
+          {% endif %}
+          
+          <p style="color: #555; font-size: 16px; margin-top: 15px;">Here are the 3 most affordable products available:</p>
+          
+          {% for product in pesticide_info %}
+          <div class="pesticide-details" style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+            <h5 style="color: #333; font-size: 18px; width: 100%; margin-top: 0;">{{ loop.index }}. {{ product.label }}</h5>
+            
+            {% if product.abpd_price %}
+            <p class="pesticide-price">Price: ₹{{ product.abpd_price }}</p>
+            {% endif %}
+            
+            {% if product.abpd_meta_title %}
+            <a href="{{ product.abpd_meta_title }}" class="buy-button" target="_blank">View Product</a>
+            {% endif %}
+            
+            {% if product.abpd_descri %}
+            <div style="margin-top: 15px; color: #444; font-size: 14px;">
+              <strong>Description:</strong>
+              <p>{{ product.abpd_descri[:150] }}{% if product.abpd_descri|length > 150 %}...{% endif %}</p>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+          
+          <!-- Pesticide Calculator -->
+          <div class="pesticide-calculator" style="margin-top: 20px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #f9f9f9;">
+            <h5 style="color: #333; font-size: 18px; width: 100%; margin-top: 0;">Pesticide Quantity Calculator</h5>
+            <p style="color: #555; font-size: 14px; margin-bottom: 15px;">Calculate how much pesticide you need based on your field size:</p>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+              <div style="flex: 1; min-width: 150px;">
+                <label for="fieldSize" style="display: block; margin-bottom: 5px; font-weight: bold;">Field Size:</label>
+                <input type="number" id="fieldSize" min="0" step="0.01" value="1" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div style="flex: 1; min-width: 150px;">
+                <label for="unitType" style="display: block; margin-bottom: 5px; font-weight: bold;">Unit:</label>
+                <select id="unitType" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                  <option value="acres">Acres</option>
+                  <option value="cents">Cents</option>
+                  <option value="hectares">Hectares</option>
+                </select>
+              </div>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+              <div style="flex: 1; min-width: 150px;">
+                <label for="dosagePerAcre" style="display: block; margin-bottom: 5px; font-weight: bold;">Dosage per Acre (ml):</label>
+                <input type="number" id="dosagePerAcre" min="0" step="0.1" value="{% if recommended_dosage %}{{ recommended_dosage }}{% else %}200{% endif %}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div style="flex: 1; min-width: 150px;">
+                <label for="sprayVolume" style="display: block; margin-bottom: 5px; font-weight: bold;">Spray Volume per Acre (L):</label>
+                <input type="number" id="sprayVolume" min="0" step="0.1" value="200" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+            </div>
+            
+            <div style="background-color: #e6f7ff; padding: 15px; border-radius: 4px; margin-top: 15px;">
+              <h6 style="margin-top: 0; color: #0066cc;">Results:</h6>
+              <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                <div>
+                  <p style="margin: 0; font-weight: bold;">Pesticide Required:</p>
+                  <p id="pesticideRequired" style="margin: 5px 0 0 0; font-size: 18px; color: #0066cc;">0 ml</p>
+                </div>
+                <div>
+                  <p style="margin: 0; font-weight: bold;">Total Spray Volume:</p>
+                  <p id="totalSprayVolume" style="margin: 5px 0 0 0; font-size: 18px; color: #0066cc;">0 L</p>
+                </div>
+                <div>
+                  <p style="margin: 0; font-weight: bold;">Estimated Cost:</p>
+                  <p id="estimatedCost" style="margin: 5px 0 0 0; font-size: 18px; color: #0066cc;">₹0</p>
+                </div>
+              </div>
+            </div>
+            
+            <div style="margin-top: 15px; font-size: 12px; color: #666;">
+              <p><strong>Note:</strong> This calculator provides estimates only. Always follow the manufacturer's instructions and consult with agricultural experts for specific recommendations.</p>
+            </div>
+          </div>
+          
+          <!-- Store the product price in a data attribute -->
+          <div id="pesticidePriceData" data-price="{% if pesticide_info and pesticide_info|length > 0 %}{% if pesticide_info[0].abpd_price %}{{ pesticide_info[0].abpd_price }}{% else %}0{% endif %}{% else %}0{% endif %}" style="display: none;"></div>
+        </div>
+        {% elif pesticide_name %}
+        <div class="pesticide-info">
+          <h4 style="color: #4682b4; font-size: 20px;">Recommended Pesticide</h4>
+          <p style="color: black; font-size: 16px;"><strong>Recommended Active Ingredient:</strong> {{ pesticide_name }}</p>
+          <p style="color: #666; font-size: 14px;">No specific product information available for this pesticide in our database.</p>
+          
+          <div class="pesticide-details">
+            <h5 style="color: #333; font-size: 18px; width: 100%;">How to Find This Product</h5>
+            <ul style="color: #555; font-size: 14px; padding-left: 20px;">
+              <li>Visit your local agricultural supply store and ask for products containing {{ pesticide_name }}</li>
+              <li>Look for alternative brand names that may contain this active ingredient</li>
+              <li>Consult with an agricultural extension officer for specific recommendations</li>
+            </ul>
+            
+            <a href="https://agribegri.com/search.php?search={{ pesticide_name }}" class="buy-button" target="_blank" style="margin-top: 15px;">Search on AgribEgri</a>
+          </div>
+        </div>
+        {% endif %}
+        
+        <a href="{{ url_for('weed_detection') }}" class="btn btn-primary mt-3">Identify Another Weed</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chatbot Elements -->
+<div class="chat-button" onclick="toggleChat()">
+  <i class="fa fa-comment chat-icon"></i>
+</div>
+
+<div class="chat-container" id="chatContainer">
+  <div class="chat-header">
+    <h5 style="margin: 0;">Weed Assistant</h5>
+    <span onclick="toggleChat()" style="cursor: pointer;">×</span>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="message bot-message">Hello! I'm your weed management assistant. How can I help you today?</div>
+  </div>
+  <div class="chat-input-container">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="if(event.keyCode == 13) sendMessage()">
+    <button class="chat-send" onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script type="text/javascript">
+  // Chatbot toggle function
+  function toggleChat() {
+    var chatContainer = document.getElementById('chatContainer');
+    if (chatContainer.style.display === 'flex') {
+      chatContainer.style.display = 'none';
+    } else {
+      chatContainer.style.display = 'flex';
+      document.getElementById('chatInput').focus();
+    }
+  }
+
+  // Send message function
+  function sendMessage() {
+    var input = document.getElementById('chatInput');
+    var message = input.value.trim();
+    
+    if (message === '') return;
+    
+    // Add user message
+    addMessage(message, 'user');
+    input.value = '';
+    
+    // Send to backend
+    fetch('/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: message }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Add bot response
+      addMessage(data.response, 'bot');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+    });
+  }
+
+  function addMessage(message, sender) {
+    var messagesContainer = document.getElementById('chatMessages');
+    var messageElement = document.createElement('div');
+    messageElement.classList.add('message');
+    messageElement.classList.add(sender + '-message');
+    messageElement.textContent = message;
+    messagesContainer.appendChild(messageElement);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+  
+  // Pesticide Calculator
+  document.addEventListener('DOMContentLoaded', function() {
+    const fieldSizeInput = document.getElementById('fieldSize');
+    const unitTypeSelect = document.getElementById('unitType');
+    const dosagePerAcreInput = document.getElementById('dosagePerAcre');
+    const sprayVolumeInput = document.getElementById('sprayVolume');
+    const pesticideRequiredElement = document.getElementById('pesticideRequired');
+    const totalSprayVolumeElement = document.getElementById('totalSprayVolume');
+    const estimatedCostElement = document.getElementById('estimatedCost');
+    
+    // Get the product price from the data attribute
+    const priceDataElement = document.getElementById('pesticidePriceData');
+    let productPrice = 0;
+    if (priceDataElement) {
+      productPrice = parseFloat(priceDataElement.getAttribute('data-price')) || 0;
+    }
+    
+    function calculatePesticideQuantity() {
+      const fieldSize = parseFloat(fieldSizeInput.value) || 0;
+      const unitType = unitTypeSelect.value;
+      const dosagePerAcre = parseFloat(dosagePerAcreInput.value) || 0;
+      const sprayVolumePerAcre = parseFloat(sprayVolumeInput.value) || 0;
+      
+      // Convert field size to acres
+      let fieldSizeInAcres = fieldSize;
+      if (unitType === 'cents') {
+        fieldSizeInAcres = fieldSize / 100; // 1 acre = 100 cents
+      } else if (unitType === 'hectares') {
+        fieldSizeInAcres = fieldSize * 2.47105; // 1 hectare = 2.47105 acres
+      }
+      
+      // Calculate pesticide required
+      const pesticideRequired = fieldSizeInAcres * dosagePerAcre;
+      const totalSprayVolume = fieldSizeInAcres * sprayVolumePerAcre;
+      
+      // Calculate estimated cost
+      const estimatedCost = (pesticideRequired / 1000) * productPrice; // Assuming 1L = 1000ml
+      
+      // Update results
+      pesticideRequiredElement.textContent = pesticideRequired.toFixed(1) + ' ml';
+      totalSprayVolumeElement.textContent = totalSprayVolume.toFixed(1) + ' L';
+      estimatedCostElement.textContent = '₹' + estimatedCost.toFixed(2);
+    }
+    
+    // Add event listeners
+    if (fieldSizeInput) fieldSizeInput.addEventListener('input', calculatePesticideQuantity);
+    if (unitTypeSelect) unitTypeSelect.addEventListener('change', calculatePesticideQuantity);
+    if (dosagePerAcreInput) dosagePerAcreInput.addEventListener('input', calculatePesticideQuantity);
+    if (sprayVolumeInput) sprayVolumeInput.addEventListener('input', calculatePesticideQuantity);
+    
+    // Initial calculation
+    calculatePesticideQuantity();
+  });
+</script>
+
+{% endblock %} 
