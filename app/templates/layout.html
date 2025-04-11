@@ -238,6 +238,9 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 					<li class="nav-item">
 						<a class="nav-link" href="{{ url_for('disease_prediction') }}">Disease</a>
 					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{{ url_for('weed_detection') }}">Weeds</a>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -282,6 +285,180 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	<!-- move top icon -->
 	<a href="#home" class="move-top text-center"></a>
 	<!-- //move top icon -->
+
+	<!-- Chatbot Elements -->
+	<div class="chat-button" onclick="toggleChat()">
+		<i class="fa fa-comment chat-icon"></i>
+	</div>
+
+	<div class="chat-container" id="chatContainer">
+		<div class="chat-header">
+			<h5 style="margin: 0;">Agro Assistant</h5>
+			<span onclick="toggleChat()" style="cursor: pointer;">×</span>
+		</div>
+		<div class="chat-messages" id="chatMessages">
+			<div class="message bot-message">Hello! I'm your agricultural assistant. How can I help you today?</div>
+		</div>
+		<div class="chat-input-container">
+			<input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="if(event.keyCode == 13) sendMessage()">
+			<button class="chat-send" onclick="sendMessage()">Send</button>
+		</div>
+	</div>
+
+	<style>
+		/* Chatbot styles */
+		.chat-button {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			background-color: #4CAF50;
+			color: white;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			z-index: 1000;
+			transition: all 0.3s;
+		}
+		
+		.chat-button:hover {
+			background-color: #45a049;
+			transform: scale(1.05);
+		}
+		
+		.chat-icon {
+			font-size: 24px;
+		}
+		
+		.chat-container {
+			position: fixed;
+			bottom: 90px;
+			right: 20px;
+			width: 350px;
+			height: 450px;
+			background-color: white;
+			border-radius: 10px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			display: none;
+			flex-direction: column;
+			z-index: 1000;
+			overflow: hidden;
+		}
+		
+		.chat-header {
+			background-color: #4CAF50;
+			color: white;
+			padding: 10px 15px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.chat-messages {
+			flex: 1;
+			padding: 15px;
+			overflow-y: auto;
+		}
+		
+		.chat-input-container {
+			padding: 10px;
+			border-top: 1px solid #ddd;
+			display: flex;
+		}
+		
+		.chat-input {
+			flex: 1;
+			padding: 8px 10px;
+			border: 1px solid #ddd;
+			border-radius: 20px;
+			margin-right: 10px;
+		}
+		
+		.chat-send {
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 20px;
+			padding: 8px 15px;
+			cursor: pointer;
+		}
+		
+		.message {
+			margin-bottom: 10px;
+			padding: 8px 12px;
+			border-radius: 15px;
+			max-width: 80%;
+			word-wrap: break-word;
+		}
+		
+		.user-message {
+			background-color: #e1ffc7;
+			align-self: flex-end;
+			margin-left: auto;
+		}
+		
+		.bot-message {
+			background-color: #f0f0f0;
+			align-self: flex-start;
+		}
+	</style>
+
+	<script type="text/javascript">
+		// Chatbot toggle function
+		function toggleChat() {
+			var chatContainer = document.getElementById('chatContainer');
+			if (chatContainer.style.display === 'flex') {
+				chatContainer.style.display = 'none';
+			} else {
+				chatContainer.style.display = 'flex';
+				document.getElementById('chatInput').focus();
+			}
+		}
+
+		// Send message function
+		function sendMessage() {
+			var input = document.getElementById('chatInput');
+			var message = input.value.trim();
+			
+			if (message === '') return;
+			
+			// Add user message
+			addMessage(message, 'user');
+			input.value = '';
+			
+			// Send to backend
+			fetch('/chat', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ message: message }),
+			})
+			.then(response => response.json())
+			.then(data => {
+				// Add bot response
+				addMessage(data.response, 'bot');
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				addMessage('Sorry, I encountered an error. Please try again later.', 'bot');
+			});
+		}
+
+		function addMessage(message, sender) {
+			var messagesContainer = document.getElementById('chatMessages');
+			var messageElement = document.createElement('div');
+			messageElement.classList.add('message');
+			messageElement.classList.add(sender + '-message');
+			messageElement.textContent = message;
+			messagesContainer.appendChild(messageElement);
+			messagesContainer.scrollTop = messagesContainer.scrollHeight;
+		}
+	</script>
 </body>
 
 </html>
